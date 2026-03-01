@@ -1,6 +1,8 @@
 ﻿#ifndef JSONUTIL_H
 #define JSONUTIL_H
 
+#include "stdint.h"
+
 #include "cJSON.h"
 #include "json_type.h"
 
