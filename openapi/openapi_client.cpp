@@ -67,6 +67,10 @@ string OpenapiClient::invoke(const string &method, const string &content, const 
     DebugLog("Request:%s", wholeContent.c_str());
 
     HttpClient httpClient;
+#ifdef _DEBUG
+    DebugLog("Via Proxy postChecker");
+    httpClient.setProxy("127.0.0.1","9000");
+#endif
     string responseStr = httpClient.sendSyncRequest(url, requestPairs);
 
     DebugLog("Response:%s", responseStr.c_str());

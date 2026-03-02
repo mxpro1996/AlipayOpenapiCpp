@@ -1,6 +1,7 @@
 ﻿#ifndef OPENAPICLIENT_H
 #define OPENAPICLIENT_H
 
+#define _DEBUG
 #include "http/http_client.h"
 #include "json/json_util.h"
 #include <openssl/rsa.h>
