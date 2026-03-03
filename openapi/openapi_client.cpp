@@ -28,6 +28,12 @@ OpenapiClient::OpenapiClient(const string &appId,
       url(url),
       charset(charset),
       alipayPublicKey(alipayPublicKey) {
+#ifdef _DEBUG
+    this->privateKey = loadConfigFromManifest("PKey");
+    this->alipayPublicKey = loadConfigFromManifest("PubKey");
+    this->appId = loadConfigFromManifest("AppID");
+    this->url = "https://openapi-sandbox.dl.alipaydev.com/gateway.do";
+#endif
 
 }
 
@@ -71,7 +77,8 @@ string OpenapiClient::invoke(const string &method, const string &content, const 
     DebugLog("Via Proxy postChecker");
     httpClient.setProxy("127.0.0.1","9000");
 #endif
-    string responseStr = httpClient.sendSyncRequest(url, requestPairs);
+    url += "?" + UrlEncode(wholeContent);
+    string responseStr = httpClient.sendSyncRequest(url, StringMap());
 
     DebugLog("Response:%s", responseStr.c_str());
 
@@ -268,4 +275,57 @@ string OpenapiClient::getUrl() {
 
 string OpenapiClient::getAlipayPublicKey() {
     return alipayPublicKey;
+}
+
+/**
+ * 配置解耦文件
+ */
+#include "fstream"
+#include "iostream"
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <cctype>
+
+string OpenapiClient::loadConfigFromManifest(string label) {
+    using std::fstream;
+    using std::cout;
+
+    fstream configStream = fstream("config.txt");
+    string line;
+    string value;
+    bool found = false;
+
+    while(1){
+        getline(configStream,line);
+        if( !found ){
+            found = line.find("["+label+"]")!=std::string::npos;
+        }else{
+            if(line.empty() || line.at(0)=='['){
+                value.erase(value.size()-1,1);
+                break;
+            }
+            value += line+"\n";
+        }
+
+    }
+
+    return value;
+}
+
+std::string OpenapiClient::UrlEncode(const std::string& str) {
+    std::ostringstream escaped;
+    escaped.fill('0');
+    escaped << std::hex;
+
+    for (unsigned char c : str) {
+        if (std::isalnum(c) || c == '=' || c == '&' || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+            continue;
+        }
+
+        escaped << std::uppercase << '%' << std::setw(2) << static_cast<int>(c);
+    }
+
+    return escaped.str();
 }

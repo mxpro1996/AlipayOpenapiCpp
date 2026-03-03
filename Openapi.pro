@@ -48,3 +48,6 @@ HEADERS += \
     openapi/json/json_type.h
 
 DEFINES += CURL_STATICLIB
+
+DISTFILES += \
+    config.txt

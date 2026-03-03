@@ -89,6 +89,10 @@ public:
 
     string getAlipayPublicKey();
 
+    string loadConfigFromManifest(string label);
+
+    string UrlEncode(const std::string& str);
+
 };
 
 #endif // OPENAPICLIENT_H
